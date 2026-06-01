@@ -1,1 +1,742 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ferdaus Agharbi — IA & Chatbots</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --cream: #f5f0e8;
+      --warm-white: #faf8f4;
+      --beige: #e8ddd0;
+      --tan: #c9b89a;
+      --brown-light: #a8916e;
+      --brown: #7a6248;
+      --rose: #d4b5a8;
+      --rose-dark: #b8907f;
+      --text: #2c2117;
+      --text-muted: #8a7060;
+      --border: #ddd3c5;
+    }
 
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--warm-white);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* ── GRAIN OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.5;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 4rem;
+      background: rgba(250, 248, 244, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem;
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: 0 4rem;
+      gap: 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      right: -10%;
+      top: 10%;
+      width: 55%;
+      height: 80%;
+      background: radial-gradient(ellipse at center, var(--beige) 0%, transparent 70%);
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .hero-text { position: relative; z-index: 1; }
+
+    .hero-eyebrow {
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--brown-light);
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.2s;
+    }
+
+    .hero-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3.5rem, 6vw, 5.5rem);
+      font-weight: 300;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.4s;
+    }
+
+    .hero-name em {
+      font-style: italic;
+      color: var(--brown-light);
+    }
+
+    .hero-tagline {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: var(--text-muted);
+      max-width: 420px;
+      margin-bottom: 3rem;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.6s;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.8s;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      padding: 0.85rem 2rem;
+      background: var(--text);
+      color: var(--warm-white);
+      text-decoration: none;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: var(--brown);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      display: inline-block;
+      padding: 0.85rem 2rem;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: border-color 0.3s, color 0.3s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--brown-light);
+      color: var(--text);
+    }
+
+    .hero-visual {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      animation: fadeIn 1.2s ease forwards 0.6s;
+    }
+
+    .hero-card {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      padding: 3rem 2.5rem;
+      width: 100%;
+      max-width: 380px;
+      position: relative;
+    }
+
+    .hero-card::before {
+      content: '';
+      position: absolute;
+      top: -8px; left: -8px;
+      right: 8px; bottom: -8px;
+      border: 1px solid var(--tan);
+      z-index: -1;
+    }
+
+    .card-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--rose-dark);
+      margin-bottom: 1rem;
+    }
+
+    .card-stat {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3.5rem;
+      font-weight: 300;
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+
+    .card-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .skill-tag {
+      padding: 0.3rem 0.8rem;
+      background: var(--warm-white);
+      border: 1px solid var(--border);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+
+    /* ── SECTION SHARED ── */
+    section {
+      padding: 6rem 4rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1.5rem;
+      margin-bottom: 4rem;
+    }
+
+    .section-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      color: var(--rose-dark);
+      font-style: italic;
+    }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 300;
+      letter-spacing: -0.01em;
+    }
+
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+      margin-left: 1rem;
+    }
+
+    /* ── ABOUT ── */
+    .about {
+      background: var(--cream);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: start;
+    }
+
+    .about-text p {
+      font-size: 1.05rem;
+      line-height: 1.85;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .about-text p strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .about-details {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .detail-item {
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .detail-item:last-child { border-bottom: none; }
+
+    .detail-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--rose-dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .detail-value {
+      font-size: 1rem;
+      color: var(--text);
+    }
+
+    /* ── PROJECTS ── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .project-card {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      padding: 2.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: default;
+    }
+
+    .project-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(122, 98, 72, 0.1);
+    }
+
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--rose), var(--tan));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+
+    .project-card:hover::before { transform: scaleX(1); }
+
+    .project-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem;
+      font-weight: 300;
+      color: var(--beige);
+      line-height: 1;
+      margin-bottom: 1.5rem;
+    }
+
+    .project-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    .project-desc {
+      font-size: 0.88rem;
+      line-height: 1.7;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .project-tech {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .tech-tag {
+      padding: 0.2rem 0.65rem;
+      background: var(--warm-white);
+      border: 1px solid var(--border);
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      color: var(--brown-light);
+    }
+
+    /* ── SKILLS ── */
+    .skills {
+      background: var(--cream);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+
+    .skill-card {
+      padding: 2rem 1.5rem;
+      border: 1px solid var(--border);
+      background: var(--warm-white);
+      text-align: center;
+      transition: border-color 0.3s, transform 0.2s;
+    }
+
+    .skill-card:hover {
+      border-color: var(--tan);
+      transform: translateY(-2px);
+    }
+
+    .skill-icon {
+      font-size: 1.8rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .skill-name {
+      font-size: 0.88rem;
+      font-weight: 500;
+      margin-bottom: 0.3rem;
+    }
+
+    .skill-type {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--rose-dark);
+    }
+
+    /* ── CONTACT ── */
+    .contact-inner {
+      max-width: 680px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .contact-lead {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 300;
+      line-height: 1.2;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .contact-lead em {
+      font-style: italic;
+      color: var(--brown-light);
+    }
+
+    .contact-sub {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-bottom: 3rem;
+      line-height: 1.7;
+    }
+
+    .contact-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      color: var(--text);
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      padding: 0.75rem 1.5rem;
+      border: 1px solid var(--border);
+      transition: border-color 0.3s, color 0.3s, transform 0.2s;
+    }
+
+    .contact-link:hover {
+      border-color: var(--brown-light);
+      color: var(--brown);
+      transform: translateY(-2px);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 2rem 4rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 1.2rem 2rem; }
+      nav .nav-links { display: none; }
+      .hero { grid-template-columns: 1fr; padding: 8rem 2rem 4rem; }
+      .hero::after { display: none; }
+      .hero-visual { display: none; }
+      section { padding: 4rem 2rem; }
+      .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .skills-grid { grid-template-columns: repeat(2, 1fr); }
+      footer { flex-direction: column; gap: 0.5rem; text-align: center; padding: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="nav-logo">Ferdaus Agharbi</a>
+    <ul class="nav-links">
+      <li><a href="#sobre-mi">Sobre mí</a></li>
+      <li><a href="#proyectos">Proyectos</a></li>
+      <li><a href="#habilidades">Habilidades</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-text">
+      <p class="hero-eyebrow">Inteligencia Artificial · Chatbots · Desarrollo Web</p>
+      <h1 class="hero-name">Ferdaus<br /><em>Agharbi</em></h1>
+      <p class="hero-tagline">Soy alguien que aprende, y todos mis esfuerzos los convierto en resultados.</p>
+      <div class="hero-cta">
+        <a href="#proyectos" class="btn-primary">Ver proyectos</a>
+        <a href="#contacto" class="btn-secondary">Contactar</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-card">
+        <p class="card-label">Enfoque actual</p>
+        <div class="card-stat">IA</div>
+        <p class="card-desc">Construyendo soluciones con inteligencia artificial aplicada</p>
+        <div class="card-skills">
+          <span class="skill-tag">Chatbots</span>
+          <span class="skill-tag">Landbot</span>
+          <span class="skill-tag">Claude AI</span>
+          <span class="skill-tag">ChatGPT</span>
+          <span class="skill-tag">Desarrollo Web</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about" id="sobre-mi">
+    <div class="section-header reveal">
+      <span class="section-number">01</span>
+      <h2 class="section-title">Sobre mí</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>Estudio <strong>Inteligencia Artificial</strong> y me especializo en la creación de chatbots y automatizaciones que resuelven problemas reales. Me apasiona aplicar la IA de forma práctica, construyendo herramientas que generan valor.</p>
+        <p>Creo que aprender y hacer van de la mano. Cada proyecto es una oportunidad de convertir el conocimiento en algo <strong>tangible y útil</strong>. Mi enfoque está siempre en los resultados.</p>
+      </div>
+      <div class="about-details reveal">
+        <div class="detail-item">
+          <p class="detail-label">Especialidad</p>
+          <p class="detail-value">Chatbots con IA · Automatización · Desarrollo Web</p>
+        </div>
+        <div class="detail-item">
+          <p class="detail-label">Formación</p>
+          <p class="detail-value">Inteligencia Artificial aplicada</p>
+        </div>
+        <div class="detail-item">
+          <p class="detail-label">Disponibilidad</p>
+          <p class="detail-value">Abierto a oportunidades y colaboraciones</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="proyectos">
+    <div class="section-header reveal">
+      <span class="section-number">02</span>
+      <h2 class="section-title">Proyectos</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="projects-grid">
+      <div class="project-card reveal">
+        <div class="project-number">01</div>
+        <h3 class="project-title">Chatbots con Landbot</h3>
+        <p class="project-desc">Diseño y desarrollo de chatbots con estructuras reales y flujos conversacionales optimizados para distintos casos de uso empresarial.</p>
+        <div class="project-tech">
+          <span class="tech-tag">Landbot</span>
+          <span class="tech-tag">Chatbot Design</span>
+          <span class="tech-tag">UX Conversacional</span>
+        </div>
+      </div>
+      <div class="project-card reveal">
+        <div class="project-number">02</div>
+        <h3 class="project-title">ChatGPT para Emprendedores</h3>
+        <p class="project-desc">Documentación práctica sobre cómo utilizar ChatGPT como herramienta de productividad y crecimiento para emprendedores y negocios.</p>
+        <div class="project-tech">
+          <span class="tech-tag">ChatGPT</span>
+          <span class="tech-tag">Prompt Engineering</span>
+          <span class="tech-tag">Documentación</span>
+        </div>
+        <a href="https://docs.google.com/document/d/1MyWTnXfuDeM-kTpSNgv7qWswnWBI1CUNWVdiavDa_6w/edit?usp=sharing" target="_blank" style="display:inline-block; margin-top:1.2rem; font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--brown-light); text-decoration:none; border-bottom: 1px solid var(--border); padding-bottom:2px;">Ver documento →</a>
+      </div>
+      <div class="project-card reveal">
+        <div class="project-number">03</div>
+        <h3 class="project-title">Automatizaciones con IA</h3>
+        <p class="project-desc">Exploración de herramientas de IA como Claude y NotebookLM para crear flujos de trabajo inteligentes y automatizados.</p>
+        <div class="project-tech">
+          <span class="tech-tag">Claude AI</span>
+          <span class="tech-tag">NotebookLM</span>
+          <span class="tech-tag">Automatización</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section class="skills" id="habilidades">
+    <div class="section-header reveal">
+      <span class="section-number">03</span>
+      <h2 class="section-title">Habilidades</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-card reveal">
+        <div class="skill-icon">🤖</div>
+        <p class="skill-name">Landbot</p>
+        <p class="skill-type">Chatbot Builder</p>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-icon">✦</div>
+        <p class="skill-name">Claude AI</p>
+        <p class="skill-type">IA Generativa</p>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-icon">💬</div>
+        <p class="skill-name">ChatGPT</p>
+        <p class="skill-type">IA Generativa</p>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-icon">📓</div>
+        <p class="skill-name">NotebookLM</p>
+        <p class="skill-type">Research AI</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contacto">
+    <div class="contact-inner">
+      <h2 class="contact-lead reveal">¿Tienes un proyecto<br/>en <em>mente</em>?</h2>
+      <p class="contact-sub reveal">Estoy abierto a nuevas oportunidades, colaboraciones y conversaciones interesantes sobre IA y tecnología.</p>
+      <div class="contact-links reveal">
+        <a href="mailto:ferdausagharbi554@gmail.com" class="contact-link">
+          <span>✉</span> ferdausagharbi554@gmail.com
+        </a>
+        <a href="https://www.linkedin.com/in/ferdaus-agharbi-2114a7360" class="contact-link" target="_blank">
+          <span>in</span> LinkedIn
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2025 Ferdaus Agharbi</p>
+    <p>Inteligencia Artificial · Chatbots · Desarrollo Web</p>
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
